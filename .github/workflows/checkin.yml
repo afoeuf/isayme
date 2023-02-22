@@ -1,0 +1,21 @@
+name: Daily Checkin
+
+on:
+  workflow_dispatch:
+
+jobs:
+  main:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm i -g pnpm && pnpm install
+      - name: Aliyundrive Checkin
+        env:
+          ALIYUNDRIVE_REFRESH_TOKEN: ${{ secrets.ALIYUNDRIVE_REFRESH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN_WITH_SECRETS_PERM }}
+        run: |
+          pnpm run checkin

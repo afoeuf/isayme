@@ -1,0 +1,22 @@
+{
+  "name": "aliyundrive-daily-checkin",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "checkin": "ts-node main.ts",
+    "debug-checkin": "PWDEBUG=1 pnpm run checkin"
+  },
+  "keywords": [],
+  "author": "iSayme <isaymeorg@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.14.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "playwright": "^1.31.0"
+  }
+}
