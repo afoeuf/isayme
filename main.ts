@@ -54,6 +54,9 @@ async function main() {
   )
 
   // 领取奖励
+
+  // 结束
+  console.log('签到完成')
 }
 
 main()
