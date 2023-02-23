@@ -68,17 +68,21 @@ async function main() {
   await page.locator('span', { hasText: '立即' }).click()
   if (signInListResp) {
     const { result } = signInListResp
-    const signInLog = lodash.findLast(result.signInLogs, (signInLog) => {
+    const { signInCount, signInLogs } = result
+    const signInLog = lodash.findLast(signInLogs, (signInLog) => {
       return !!signInLog.reward?.name
     })
 
     const { reward } = signInLog
-    console.log(`签到完成，获得奖励: ${reward.name} ${reward.description}`)
+
+    await notifyDingtalk(
+      `阿里云盘签到完成，获得奖励: ${reward.name} ${reward.description}, 本月累计签到 ${signInCount} 天`,
+    )
     return
   }
 
   // 结束
-  console.log('签到完成')
+  await notifyDingtalk('阿里云盘签到完成')
 }
 
 main()
@@ -86,6 +90,28 @@ main()
     process.exit(0)
   })
   .catch((err) => {
-    console.log(`签到失败: ${err}`)
-    process.exit(-1)
+    notifyDingtalk(`阿里云盘签到失败: ${err}`).finally(() => {
+      process.exit(-1)
+    })
   })
+
+async function notifyDingtalk(message: string) {
+  console.log(message)
+  let url = process.env.DINGTALK_WEBHOOK_URL
+  if (!url) {
+    return
+  }
+
+  await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      msgtype: 'text',
+      text: {
+        content: message,
+      },
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
+  })
+}
