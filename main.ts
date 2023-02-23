@@ -73,7 +73,7 @@ async function main() {
     })
 
     const { reward } = signInLog
-    console.log(`签到完成，获得奖励: ${reward.name} ${reward.name}`)
+    console.log(`签到完成，获得奖励: ${reward.name} ${reward.description}`)
     return
   }
 
