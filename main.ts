@@ -1,4 +1,5 @@
 import { execSync } from 'child_process'
+import lodash from 'lodash'
 import { chromium } from 'playwright'
 
 const userAgent =
@@ -40,7 +41,9 @@ async function main() {
   // 所有请求附带 access_token
   page.route('**/*', (route, request) => {
     const headers = request.headers()
-    headers['Authorization'] = `Bearer ${access_token}`
+    if (request.method() === 'POST') {
+      headers['Authorization'] = `Bearer ${access_token}`
+    }
 
     route.continue({ headers })
   })
@@ -53,10 +56,36 @@ async function main() {
     },
   )
 
+  let signInListResp = null
+  page.on('response', async function (response) {
+    let url = response.url()
+    if (lodash.includes(url, 'activity/sign_in_list')) {
+      signInListResp = await response.json()
+    }
+  })
+
   // 领取奖励
+  await page.locator('span', { hasText: '立即' }).click()
+  if (signInListResp) {
+    const { result } = signInListResp
+    const signInLog = lodash.findLast(result.signInLogs, (signInLog) => {
+      return !!signInLog.reward?.name
+    })
+
+    const { reward } = signInLog
+    console.log(`签到完成，获得奖励: ${reward.name} ${reward.name}`)
+    return
+  }
 
   // 结束
   console.log('签到完成')
 }
 
 main()
+  .then(() => {
+    process.exit(0)
+  })
+  .catch((err) => {
+    console.log(`签到失败: ${err}`)
+    process.exit(-1)
+  })
