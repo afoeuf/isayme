@@ -3,7 +3,7 @@ import lodash from 'lodash'
 import { chromium } from 'playwright'
 
 const userAgent =
-  'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20C65 iOS16.2 (iPhone11,8;zh-Hans-CN) App/4.1.0 AliApp(yunpan/4.1.0) com.alicloud.smartdrive/28062254  Channel/201200 AliApp(AYSD/4.1.0) com.alicloud.smartdrive/4.1.0 Version/16.2 Channel/201200 Language/zh-Hans-CN /iOS Mobile/iPhone11,8 language/zh-Hans-CN'
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 16_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20C65 iOS16.2 (iPhone11,8;zh-Hans-CN) App/4.1.0 AliApp(yunpan/4.1.0) com.alicloud.smartdrive/28062254  Channel/201200 AliApp(AYSD/4.1.0) com.alicloud.smartdrive/4.1.0 Version/16.2 Channel/201200 Language/zh-Hans-CN /iOS Mobile/iPhone11,8 language/zh-Hans-CN'
 
 async function main() {
   // 刷新 token
@@ -56,27 +56,18 @@ async function main() {
     },
   )
 
-  let signInListResp = null
-  page.on('response', async function (response) {
-    let url = response.url()
-    if (lodash.includes(url, 'activity/sign_in_list')) {
-      signInListResp = await response.json()
-    }
-  })
-
   // 领取奖励
   await page.locator('span', { hasText: '立即' }).click()
-  if (signInListResp) {
-    const { result } = signInListResp
-    const { signInCount, signInLogs } = result
-    const signInLog = lodash.findLast(signInLogs, (signInLog) => {
-      return !!signInLog.reward?.name
-    })
+  
+  const signInRewardResp = await page
+    .waitForResponse(/sign_in_reward/, { timeout: 5000 })
+    .catch(lodash.noop)
 
-    const { reward } = signInLog
+  if (signInListResp && signInRewardResp.ok()) {
+    const { result } = await signInListResp.json()
 
     await notifyDingtalk(
-      `阿里云盘签到完成，获得奖励: ${reward.name} ${reward.description}, 本月累计签到 ${signInCount} 天`,
+      `阿里云盘签到完成，获得奖励: ${result.name} ${result.description}`,
     )
     return
   }
