@@ -63,8 +63,8 @@ async function main() {
     .waitForResponse(/sign_in_reward/, { timeout: 5000 })
     .catch(lodash.noop)
 
-  if (signInListResp && signInRewardResp.ok()) {
-    const { result } = await signInListResp.json()
+  if (signInRewardResp && signInRewardResp.ok()) {
+    const { result } = await signInRewardResp.json()
 
     await notifyDingtalk(
       `阿里云盘签到完成，获得奖励: ${result.name} ${result.description}`,
