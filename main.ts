@@ -57,19 +57,29 @@ async function main() {
   )
 
   // 领取奖励
-  await page.locator('span', { hasText: '立即' }).click()
-  
-  const signInRewardResp = await page
-    .waitForResponse(/sign_in_reward/, { timeout: 5000 })
+  const rewardButtonSelector = 'span:has-text("立即领取")'
+  await page
+    .waitForSelector(rewardButtonSelector, { timeout: 15000 })
     .catch(lodash.noop)
+  const hasReward = await page.locator(rewardButtonSelector).isVisible()
+  if (hasReward) {
+    console.log('有奖励需要领取')
+    await page.locator(rewardButtonSelector).click()
 
-  if (signInRewardResp && signInRewardResp.ok()) {
-    const { result } = await signInRewardResp.json()
+    const signInRewardResp = await page
+      .waitForResponse(/sign_in_reward/, { timeout: 15000 })
+      .catch(lodash.noop)
 
-    await notifyDingtalk(
-      `阿里云盘签到完成，获得奖励: ${result.name} ${result.description}`,
-    )
-    return
+    if (signInRewardResp && signInRewardResp.ok()) {
+      const { result } = await signInRewardResp.json()
+
+      await notifyDingtalk(
+        `阿里云盘签到完成，获得奖励: ${result.name} ${result.description}`,
+      )
+      return
+    }
+  } else {
+    console.log('无奖励需要领取')
   }
 
   // 结束
