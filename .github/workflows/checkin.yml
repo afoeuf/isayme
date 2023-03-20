@@ -17,9 +17,12 @@ jobs:
       - name: Install dependencies
         run: npm i -g pnpm && pnpm install
       - name: Aliyundrive Checkin
+        uses: nick-fields/retry@v2
         env:
           DINGTALK_WEBHOOK_URL: ${{ secrets.DINGTALK_WEBHOOK_URL }}
           ALIYUNDRIVE_REFRESH_TOKEN: ${{ secrets.ALIYUNDRIVE_REFRESH_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN_WITH_SECRETS_PERM }}
-        run: |
-          pnpm run checkin
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: pnpm run checkin
