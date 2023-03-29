@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: 18
       - name: Install dependencies
-        run: npm i -g pnpm && pnpm install
+        run: npm i -g pnpm@7 && pnpm install
       - name: Aliyundrive Checkin
         uses: nick-fields/retry@v2
         env:
