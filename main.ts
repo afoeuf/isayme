@@ -78,6 +78,9 @@ async function main() {
       )
       return
     }
+    
+    await notifyDingtalk('阿里云盘签到完成，奖励领取失败，请手动领取')
+    return
   } else {
     console.log('无奖励需要领取')
   }
