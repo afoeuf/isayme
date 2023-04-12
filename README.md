@@ -8,6 +8,10 @@
 4. 添加 Github Actions Secret `GH_TOKEN_WITH_SECRETS_PERM`, 值为上一步得到的 token；
 5. [可选] 签到完成后支持钉钉推送，创建 Github Actions Secret `DINGTALK_WEBHOOK_URL`, 值为钉钉机器人 webhook 地址；
 
+# 同步最新代码
+<img width="355" alt="image" src="https://user-images.githubusercontent.com/1747852/231325689-0cd45b77-396f-4d55-a0e6-94b814a8b3ca.png">
+
+
 # 工作原理
 1. 签到并领取奖励：使用 playwright 模拟移动端访问签到页面并模拟用户点击领取奖励；
 2. 定时执行: Github Actions 可以自定义每日定时触发执行任务；
