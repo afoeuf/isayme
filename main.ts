@@ -1,6 +1,8 @@
 import { execSync } from 'child_process'
 import lodash from 'lodash'
 import { chromium } from 'playwright'
+import { dayOfMonth } from './date'
+import logger from './logger'
 
 const userAgent =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 16_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/20C65 iOS16.2 (iPhone11,8;zh-Hans-CN) App/4.1.0 AliApp(yunpan/4.1.0) com.alicloud.smartdrive/28062254  Channel/201200 AliApp(AYSD/4.1.0) com.alicloud.smartdrive/4.1.0 Version/16.2 Channel/201200 Language/zh-Hans-CN /iOS Mobile/iPhone11,8 language/zh-Hans-CN'
@@ -63,7 +65,7 @@ async function main() {
     .catch(lodash.noop)
   const hasReward = await page.locator(rewardButtonSelector).isVisible()
   if (hasReward) {
-    console.log('有奖励需要领取')
+    logger.info('有奖励需要领取')
     await page.locator(rewardButtonSelector).click()
 
     const signInRewardResp = await page
@@ -78,11 +80,11 @@ async function main() {
       )
       return
     }
-    
+
     await notifyDingtalk('阿里云盘签到完成，奖励领取失败，请手动领取')
     return
   } else {
-    console.log('无奖励需要领取')
+    logger.info('无奖励需要领取')
   }
 
   // 结束
@@ -100,7 +102,7 @@ main()
   })
 
 async function notifyDingtalk(message: string) {
-  console.log(message)
+  logger.info(message)
   let url = process.env.DINGTALK_WEBHOOK_URL
   if (!url) {
     return
