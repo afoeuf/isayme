@@ -50,12 +50,31 @@ async function main() {
     route.continue({ headers })
   })
 
-  // 签到
-  await page.goto(
-    'https://pages.aliyundrive.com/mobile-page/web/dailycheck.html?disableNav=YES&adtag=push_dailySignRemind',
-    {
-      waitUntil: 'domcontentloaded',
-    },
+  const [_, singInListResponse] = await Promise.all([
+    // 签到
+    page.goto(
+      'https://pages.aliyundrive.com/mobile-page/web/dailycheck.html?disableNav=YES&adtag=push_dailySignRemind',
+      {
+        waitUntil: 'domcontentloaded',
+      },
+    ),
+    page.waitForResponse(/sign_in_list/, { timeout: 60000 }),
+  ])
+
+  const { result: singInListResult } = await singInListResponse.json()
+  const { signInCount, signInLogs } = singInListResult
+  const signInOfToday = signInLogs[dayOfMonth() - 1]
+
+  if (signInOfToday.reward) {
+    logger.info(
+      `今日奖励: ${signInOfToday.reward.name} - ${signInOfToday.reward.description}`,
+    )
+  }
+
+  logger.info(
+    `已连续签到 ${signInCount} 天，今日奖励${
+      signInOfToday.isReward ? '已' : '待'
+    }领取`,
   )
 
   // 领取奖励
@@ -84,11 +103,8 @@ async function main() {
     await notifyDingtalk('阿里云盘签到完成，奖励领取失败，请手动领取')
     return
   } else {
-    logger.info('无奖励需要领取')
+    await notifyDingtalk('阿里云盘签到完成，无奖励需要领取')
   }
-
-  // 结束
-  await notifyDingtalk('阿里云盘签到完成')
 }
 
 main()
