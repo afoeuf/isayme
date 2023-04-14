@@ -63,7 +63,7 @@ async function main() {
 
   const { result: singInListResult } = await singInListResponse.json()
   const { signInCount, signInLogs } = singInListResult
-  const signInOfToday = signInLogs[dayOfMonth() - 1]
+  const signInOfToday = signInLogs[signInCount - 1]
 
   if (signInOfToday.reward) {
     logger.info(
@@ -72,7 +72,7 @@ async function main() {
   }
 
   logger.info(
-    `已连续签到 ${signInCount} 天，今日奖励${
+    `本月累计签到 ${signInCount} 天，今日奖励${
       signInOfToday.isReward ? '已' : '待'
     }领取`,
   )
