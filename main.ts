@@ -65,17 +65,17 @@ async function main() {
   const { signInCount, signInLogs } = singInListResult
   const signInOfToday = signInLogs[signInCount - 1]
 
-  if (signInOfToday.reward) {
-    logger.info(
-      `今日奖励: ${signInOfToday.reward.name} - ${signInOfToday.reward.description}`,
-    )
-  }
-
+  logger.info(`今日奖励类型: ${signInOfToday.type}`)
   logger.info(
     `本月累计签到 ${signInCount} 天，今日奖励${
       signInOfToday.isReward ? '已' : '待'
     }领取`,
   )
+  
+  if (signInOfToday.isReward) {
+    await notifyDingtalk('阿里云盘签到完成，奖励已领取，无需重复领取')
+    return
+  }
 
   // 领取奖励
   const rewardButtonSelector = 'span:has-text("立即领取")'
