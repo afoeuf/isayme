@@ -4,7 +4,9 @@
 # 使用说明
 1. Fork 本代码库;
 2. 添加 Github Actions Secret `ALIYUNDRIVE_REFRESH_TOKEN`, 值为云盘账号 refresh_token；
-3. 在 [Github Developer settings](https://github.com/settings/tokens?type=beta) 创建一个 token，建议权限限定到 Fork 后的仓库，权限 Secrets 为 Read and write, 保存生成的 token；
+3. 在 [Github Developer settings](https://github.com/settings/tokens) 创建一个 token, 有两种创建 token 选择，推荐`Tokens (classic)`，原因是这种类型的 token 可以配永久有效：
+   - [推荐] 创建 `Tokens (classic)`, 权限选择 `repo -> public_repo` 即可，有效期选择`No expiration`;
+   - 如果`Fine-grained tokens`, 建议权限限定到 Fork 后的仓库，权限 Secrets 为 Read and write;
 4. 添加 Github Actions Secret `GH_TOKEN_WITH_SECRETS_PERM`, 值为上一步得到的 token；
 5. [可选] 签到完成后支持钉钉推送，创建 Github Actions Secret `DINGTALK_WEBHOOK_URL`, 值为钉钉机器人 webhook 地址；
 
